@@ -2,15 +2,17 @@
 import cv2
 import numpy as np
 import motion
+import util_funcs as util
 
 # these values may need to be adjusted
-BOUNDARY_AREA = 25000
+BOUNDARY_AREA = 15000
 BLOCK_AREA_MIN = 25000
 BLOCK_AREA_MAX = 35000
 PLATFORM_AREA = 70000
 
-# bool to keep track of when the robot is carrying a block
+# bools to keep track of state robot is in
 holdingBlock = False
+navigationState = True
 
 # set blue mask limits
 lower_blue = np.array([90,40,40])
@@ -23,16 +25,21 @@ upper_yellow = np.array([35,255,255])
 # start filming (but not showing it)
 cap = cv2.VideoCapture(0)
 
-# set dimensions of frames
-width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# get dimensions of frames
+frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+# get center of frame
+frame_centerX = int(frame_width / 2)
+frame_centerY = int(frame_height / 2)
 
 # main function
 while True:
     
-    # move forward until seeing a big enough contour
-    motion.move_forward(0,0,0)
+    if (navigationState == True):
+        # move forward until seeing a big enough contour
+        motion.move_forward(0,0,0)
+        print("move forward")
     
     # frame is the picture
     ret,frame = cap.read()
@@ -59,9 +66,13 @@ while True:
     # check if boundary contours are big enough
     for cont in blue_contours:
         area = cv2.contourArea(cont)
+        
         if (area > BOUNDARY_AREA):
-            motion.stop()
-            motion.backupAndRotate()
+            
+            # ignore boundaries if in process of picking up block
+            if (navigationState == True):
+                motion.stop()
+                motion.backupAndRotate()
     
     # check if any yellow contours are big enough
     for cont in yellow_contours:
@@ -77,15 +88,31 @@ while True:
         
         # encounter block
         elif (area > BLOCK_AREA_MIN and area < BLOCK_AREA_MAX):
-            # pick up block if not holding one
+            # stop anf change out of navigation state if not holding a block
             if (holdingBlock == False):
-                motion.pickup_item()
-                holdingBlock = True
+                motion.stop()
+                navigationState = False
+                
+                # check alignment (0 is aligned, 1 is offset right, 2 is offset left)
+                align_state = util.check_align_state(frame, frame_centerX,
+                                                     frame_centerY, cont, 30)
+                
+                # pickup block and switch to holdingBlock state when aligned
+                if (align_state == 0):
+                    motion.pickup_item()
+                    holdingBlock = True
+                    navigationState = True
+                
+                elif (align_state == 1):
+                    motion.turn_left(0,0)
+                
+                elif (align_state == 2):
+                    motion.turn_right(0,0)
             
             # go around block if holding one
             else:
                 pass
-                # TODO find a better way to do this
+                # TODO find a better way to do this (possibly use a 3rd color)
                 # the problem is when it sees the platform from far away
                 # it mistakes it for a block, and avoids it
                 #motion.stop()
@@ -95,8 +122,8 @@ while True:
     #cv2.imshow('regular video', frame)
     
     # show the masked video (for debugging only)
-    #masked_video = boundaries + blocks
-    #cv2.imshow('masked video', masked_video)
+    masked_video = boundaries + blocks
+    cv2.imshow('masked video', masked_video)
     
     
     # stop video if user presses 'q'
@@ -107,7 +134,7 @@ while True:
 
 
 # stop filming and close windows if in debugging mode
-#cap.release()
-#cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
 
 print("exiting program")
