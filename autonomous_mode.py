@@ -1,6 +1,8 @@
 #! /usr/bin/python3
 import cv2
 import numpy as np
+import motion
+
 
 # set your mask limits
 lower_blue = np.array([90,40,40])
@@ -13,7 +15,12 @@ cap = cv2.VideoCapture(0)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+
+# main function
 while True:
+    
+    # move forward until seeing a big enough contour
+    motion.move_forward(1,1)
     
     # frame is the picture
     ret,frame = cap.read()
@@ -45,24 +52,31 @@ while True:
         #cX = int(M["m10"] / (M["m00"] + 0.0000001))
         #cY = int(M["m01"] / (M["m00"] + 0.0000001))
         area = cv2.contourArea(cont)
-        if (area > 5000):
-            print("Stop!")
+        if (area > 25000):
+            motion.stop()
+            motion.backupAndRotate()
             #print("Contour area: ", area)
-        else:
-            print("Drive...")
+        #else:
+            #motion.move_forward(1,1)
         #print(area)
         # draw red circle at center points
         #cv2.circle(frame, (cX,cY), 3, (0,0,255), -1)
         
     
     # show the camera
-    #cv2.imshow('lanes', frame)
+#    cv2.imshow('lanes', frame)
+    
     
     # exit loop if user presses 'q'
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-    
+    #if cv2.waitKey(1) & 0xFF == ord('q'):
+    #    break
+
+
+
+
 # stop filming
 #cap.release()
 
 #cv2.destroyAllWindows()
+
+print("exiting program")
