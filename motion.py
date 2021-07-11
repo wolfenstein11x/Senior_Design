@@ -30,16 +30,25 @@ def backupAndRotate():
     turn_right(1,1)
     
 def raise_claw(speed, time):
-    print("raise claw")
+    bot.encoderMotorRun(ARM_MOTOR_PORT,-speed)
+    sleep(time)
+    bot.encoderMotorRun(ARM_MOTOR_PORT,0)
+        
     
 def lower_claw(speed, time):
-    print("lower claw")
+    bot.encoderMotorRun(ARM_MOTOR_PORT,speed)
+    sleep(time)
+    bot.encoderMotorRun(ARM_MOTOR_PORT,0)
     
 def tighten_claw(speed, time):
-    print("tighten claw")
+    bot.encoderMotorRun(CLAW_MOTOR_PORT,-speed)
+    sleep(time)
+    bot.encoderMotorRun(CLAW_MOTOR_PORT,0)
     
 def loosen_claw(speed, time):
-    print("loosen claw")
+    bot.encoderMotorRun(CLAW_MOTOR_PORT,speed)
+    sleep(time)
+    bot.encoderMotorRun(CLAW_MOTOR_PORT,0)
 
 
     

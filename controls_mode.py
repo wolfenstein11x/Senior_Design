@@ -39,13 +39,13 @@ while True:
     elif input == right:
         motion.turn_right(1,1)
     elif input == claw_up:
-        motion.raise_claw(1,1)
+        motion.raise_claw(30,1.5)
     elif input == claw_down:
-        motion.lower_claw(1,1)
+        motion.lower_claw(30,1.5)
     elif input == claw_tight:
-        motion.tighten_claw(1,1)
+        motion.tighten_claw(30,1.5)
     elif input == claw_loose:
-        motion.loosen_claw(1,1)
+        motion.loosen_claw(30,1.5)
         
 
 # reset input setting, otherwise won't be able to type in terminal
