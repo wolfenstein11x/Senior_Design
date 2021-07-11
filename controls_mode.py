@@ -31,9 +31,9 @@ while True:
     
     # use controls to move in controls mode
     if input == forward:
-        motion.move_forward(1,1)
+        motion.move_forward(10,30,4)
     elif input == backward:
-        motion.move_backward(1,1)
+        motion.move_backward(10,30,4)
     elif input == left:
         motion.turn_left(1,1)
     elif input == right:
