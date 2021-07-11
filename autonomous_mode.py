@@ -9,6 +9,7 @@ BOUNDARY_AREA = 15000
 BLOCK_AREA_MIN = 25000
 BLOCK_AREA_MAX = 35000
 PLATFORM_AREA = 70000
+ALIGN_MARGIN = 30
 
 # bools to keep track of state robot is in
 holdingBlock = False
@@ -95,7 +96,8 @@ while True:
                 
                 # check alignment (0 is aligned, 1 is offset right, 2 is offset left)
                 align_state = util.check_align_state(frame, frame_centerX,
-                                                     frame_centerY, cont, 30)
+                                                     frame_centerY, cont,
+                                                     ALIGN_MARGIN)
                 
                 # pickup block and switch to holdingBlock state when aligned
                 if (align_state == 0):
