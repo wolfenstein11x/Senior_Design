@@ -2,6 +2,11 @@
 import motion
 import tty, sys, termios
 
+## Note: to exit the program, press 'q'
+## Don't do control-c until you press 'q'
+## If you just do control-c, then you won't be able to type in the terminal
+## and you will have to close the terminal and reopen it in order to type
+
 # controls
 forward = "w"
 backward = "s"
@@ -51,5 +56,5 @@ while True:
 # reset input setting, otherwise won't be able to type in terminal
 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, filedescriptors)
 
-print("ended program")
+print("now you can do control-c")
     
